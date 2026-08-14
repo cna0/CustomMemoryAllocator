@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/chanutha/Documents/Projects/MemoryAllocator/main'
+relocations:     []
+...
