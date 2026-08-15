@@ -8,12 +8,24 @@ struct Block{
 
 
 int main(){
-    Block block;
-    block.size = 100;
-    block.is_free = true;
-    block.next = nullptr;
+    Block first;
+    Block second;
 
-    std::cout << "Size: " << block.size << '\n';
-    std::cout << "Free: " << block.is_free << '\n';
-    std::cout << "Next: " << block.next << '\n';
+    first.size = 100;
+    first.is_free = true;
+    first.next = &second;
+
+
+    second.size = 250;
+    second.is_free = true;
+    second.next = nullptr;
+
+    std::cout << "Size: " << first.size << '\n';
+    std::cout << "Free: " << first.is_free << '\n';
+    std::cout << "Next: " << first.next << '\n';
+
+    std::cout << "Size: " << second.size << '\n';
+    std::cout << "Free: " << second.is_free << '\n';
+    std::cout << "Next: " << second.next << '\n';
+
 }
