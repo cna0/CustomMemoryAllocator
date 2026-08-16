@@ -1,31 +1,57 @@
-#include <iostream>\
+// Provides std::size_t, an unsigned integer type used to represent sizes and byte counts safely
+#include <cstddef>
+#include <iostream>
 
+// Represents a chunk of memory within our memory pool
 struct Block{
     std::size_t size; //stores how big the block is
     bool is_free; //checks whether block is currently available
     Block* next; //pointer to another block
 };
 
+class MemoryAllocator{
+private:
+    //pointer to memory pool
+    char* memory;
+    //pointer to first block
+    Block* first_block;
+
+public:
+    //constructor
+    /*
+    Constructors Job:
+    - recieve the size
+    - create the memory pool
+    - create the first block
+    - make the first block describe the entire pool
+    - make it as free
+    */
+   //sets up the initial memory pool and metadata block
+    MemoryAllocator(std::size_t size){
+        memory = new char[size]; //allocates the raw byte array to be used as the memory pool
+
+        first_block = new Block;
+        first_block->size = size;
+        first_block->is_free = true;
+        first_block->next = nullptr;
+    }
+    //deconstructor to clean up dynamically allocated memory to prevent leaks
+    ~MemoryAllocator(){
+        delete[] memory;
+        delete first_block;
+    }
+
+    void print_state(){
+        //prints the current state of allocators first block
+        std::cout << "Memory size: " << first_block->size << '\n';
+        std::cout << "Is free: " << first_block->is_free << '\n';
+        std::cout << "Next block: " << first_block->next << '\n';
+    }
+
+};
 
 int main(){
-    Block first;
-    Block second;
-
-    first.size = 100;
-    first.is_free = true;
-    first.next = &second;
-
-
-    second.size = 250;
-    second.is_free = true;
-    second.next = nullptr;
-
-    std::cout << "Size: " << first.size << '\n';
-    std::cout << "Free: " << first.is_free << '\n';
-    std::cout << "Next: " << first.next << '\n';
-
-    std::cout << "Size: " << second.size << '\n';
-    std::cout << "Free: " << second.is_free << '\n';
-    std::cout << "Next: " << second.next << '\n';
-
+    MemoryAllocator allocator(1000);
+    allocator.print_state();
+    return 0;
 }
