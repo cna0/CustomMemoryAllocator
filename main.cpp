@@ -17,16 +17,7 @@ private:
     Block* first_block;
 
 public:
-    //constructor
-    /*
-    Constructors Job:
-    - recieve the size
-    - create the memory pool
-    - create the first block
-    - make the first block describe the entire pool
-    - make it as free
-    */
-   //sets up the initial memory pool and metadata block
+    //sets up the initial memory pool and metadata block
     MemoryAllocator(std::size_t size){
         memory = new char[size]; //allocates the raw byte array to be used as the memory pool
 
@@ -41,6 +32,15 @@ public:
         delete first_block;
     }
 
+    
+    void* allocate(std::size_t size){
+        if (first_block->is_free && first_block->size){
+            first_block->is_free = false;
+            return memory;
+        }
+        return nullptr;
+    }
+
     void print_state(){
         //prints the current state of allocators first block
         std::cout << "Memory size: " << first_block->size << '\n';
@@ -53,5 +53,8 @@ public:
 int main(){
     MemoryAllocator allocator(1000);
     allocator.print_state();
-    return 0;
+
+    void* ptr = allocator.allocate(100);
+    allocator.print_state();
+
 }
