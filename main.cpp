@@ -54,7 +54,9 @@ int main(){
     MemoryAllocator allocator(1000);
     allocator.print_state();
 
-    void* ptr = allocator.allocate(100);
+    void* ptr1 = allocator.allocate(100);
+    void* ptr2 = allocator.allocate(10); //shouldnt work because the block is already marked as used
     allocator.print_state();
+    std::cout << ptr2 << '\n'; //shld return 0
 
 }
