@@ -34,29 +34,66 @@ public:
 
     
     void* allocate(std::size_t size){
+        Block* current = first_block;
+
+        while (current != nullptr){
+            if (current->is_free && current->size >= size){
+                Block* new_block = new Block; //create a new block to rep remaining free memory
+                new_block->size = current->size - size; //new block gets what ever mem is left after req allocation
+                new_block->is_free = true; //the rem mem is free
+                new_block->next = current->next; //mew block takes the place of the current old nect block
+                new_block->next = new_block; //connect the current block to the newly created block
+                current->size = size; //current block rep only the amount of mem requested
+                current->is_free = false; //mark the current as being used
+                return memory; //return pointer to beginning of mem pool
+            }
+
+            current = current->next; //this block wasnt suitable so we move to the next block
+
+        }
+
+        /*
         if (first_block->is_free && first_block->size){
             first_block->is_free = false;
             return memory;
         }
+        */
         return nullptr;
     }
 
+    //prints current state of all blocks
     void print_state(){
-        //prints the current state of allocators first block
-        std::cout << "Memory size: " << first_block->size << '\n';
-        std::cout << "Is free: " << first_block->is_free << '\n';
-        std::cout << "Next block: " << first_block->next << '\n';
+        Block* current = first_block;
+        int block_number = 0;
+        while (current != nullptr){
+            std::cout << "Block " << block_number << '\n';
+            std::cout << "   Size: " << current->size << " bytes\n";
+            std::cout << "   Free: " << std::boolalpha << current->is_free << '\n';
+            std::cout << '\n';
+
+            current = current->next;
+            ++block_number;
+        }
+
     }
+
 
 };
 
 int main(){
-    MemoryAllocator allocator(1000);
+    MemoryAllocator allocator(1000); //1000byte mem pool
+
+    std::cout << "initial state: \n";
     allocator.print_state();
 
     void* ptr1 = allocator.allocate(100);
-    void* ptr2 = allocator.allocate(10); //shouldnt work because the block is already marked as used
+
+    std::cout << "After first block: \n";
     allocator.print_state();
-    std::cout << ptr2 << '\n'; //shld return 0
+
+    void* ptr2 = allocator.allocate(250);
+
+    std::cout << "After second block: \n";
+    allocator.print_state();
 
 }
