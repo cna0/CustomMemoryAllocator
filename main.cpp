@@ -42,7 +42,7 @@ public:
                 new_block->size = current->size - size; //new block gets what ever mem is left after req allocation
                 new_block->is_free = true; //the rem mem is free
                 new_block->next = current->next; //mew block takes the place of the current old nect block
-                new_block->next = new_block; //connect the current block to the newly created block
+                current->next = new_block; //connect the current block to the newly created block
                 current->size = size; //current block rep only the amount of mem requested
                 current->is_free = false; //mark the current as being used
                 return memory; //return pointer to beginning of mem pool
