@@ -36,6 +36,9 @@ public:
     void* allocate(std::size_t size){
         Block* current = first_block;
 
+        //keeps track of how many bytes passed while searching through the mem blocks
+        std::size_t offset = 0;
+
         while (current != nullptr){
             if (current->is_free && current->size >= size){
                 Block* new_block = new Block; //create a new block to rep remaining free memory
@@ -45,19 +48,14 @@ public:
                 current->next = new_block; //connect the current block to the newly created block
                 current->size = size; //current block rep only the amount of mem requested
                 current->is_free = false; //mark the current as being used
-                return memory; //return pointer to beginning of mem pool
+                return memory + offset; //return pointer to beginning of mem pool
             }
-
+            
+            offset += current->size;
             current = current->next; //this block wasnt suitable so we move to the next block
 
         }
 
-        /*
-        if (first_block->is_free && first_block->size){
-            first_block->is_free = false;
-            return memory;
-        }
-        */
         return nullptr;
     }
 
