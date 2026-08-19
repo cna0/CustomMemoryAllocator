@@ -86,12 +86,23 @@ int main(){
 
     void* ptr1 = allocator.allocate(100);
 
-    std::cout << "After first block: \n";
+    std::cout << "\nAfter allocating 100 bytes: \n";
     allocator.print_state();
 
     void* ptr2 = allocator.allocate(250);
 
-    std::cout << "After second block: \n";
+    std::cout << "After allocating 250 bytes: \n";
     allocator.print_state();
 
+    std::cout << "\nPointer: \n";
+    std::cout << "ptr1: " << ptr1 << '\n';
+    std::cout << "ptr2: " << ptr2 << '\n';
+
+    //testing by explicitly converting the pointers to char*
+    auto* p1 = static_cast<char*>(ptr1);
+    auto* p2 = static_cast<char*>(ptr2);
+
+    std::cout << "Distance: " << p2 - p1 << " bytes\n";
+    
+    
 }
