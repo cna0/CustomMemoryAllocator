@@ -59,6 +59,28 @@ public:
         return nullptr;
     }
 
+    void deallocate(void* ptr){
+        if (ptr = nullptr){
+            return;
+        }
+        Block* current = first_block;
+        //keeps track of whjere current block starts relative to the beginning of the pool
+        std::size_t offset = 0;
+
+        while (current != nullptr){
+            //calculates the address where this blocks usable memory begins
+            char* block_address = memory + offset;
+            //checks whether the pointer we were given belong to this block
+            if (ptr == block_address){
+                current->is_free = true; //mark the block as avaible
+                return;
+            }
+            //move to the next block
+            offset += current->size;
+            current = current->next;
+        }
+    }
+
     //prints current state of all blocks
     void print_state(){
         Block* current = first_block;
@@ -102,7 +124,7 @@ int main(){
     auto* p1 = static_cast<char*>(ptr1);
     auto* p2 = static_cast<char*>(ptr2);
 
-    std::cout << "Distance: " << p2 - p1 << " bytes\n";
+    std::cout << "Distance: " << p2 - p1 << " bytes\n"; 
     
     
 }
