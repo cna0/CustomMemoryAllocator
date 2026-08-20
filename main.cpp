@@ -101,30 +101,60 @@ public:
 };
 
 int main(){
+    std::cout << std::boolalpha;
+
     MemoryAllocator allocator(1000); //1000byte mem pool
 
-    std::cout << "initial state: \n";
+    std::cout << "Initial state:\n";
     allocator.print_state();
 
+    std::cout << "\nAllocating 100 bytes...\n";
     void* ptr1 = allocator.allocate(100);
-
-    std::cout << "\nAfter allocating 100 bytes: \n";
+    std::cout << "Pointer: " << ptr1 << '\n';
     allocator.print_state();
 
-    void* ptr2 = allocator.allocate(250);
-
-    std::cout << "After allocating 250 bytes: \n";
+    std::cout << "\nAllocating 200 bytes...\n";
+    void* ptr2 = allocator.allocate(200);
+    std::cout << "Pointer: " << ptr2 << '\n';
     allocator.print_state();
 
-    std::cout << "\nPointer: \n";
-    std::cout << "ptr1: " << ptr1 << '\n';
-    std::cout << "ptr2: " << ptr2 << '\n';
+    std::cout << "\nChecking pointers...\n";
+    if (ptr1 != ptr2) {
+        std::cout << "PASS: pointers are different.\n";
+    } else {
+        std::cout << "FAIL: pointers are the same.\n";
+    }
 
-    //testing by explicitly converting the pointers to char*
-    auto* p1 = static_cast<char*>(ptr1);
-    auto* p2 = static_cast<char*>(ptr2);
+    std::cout << "\nFreeing the first block...\n";
+    allocator.deallocate(ptr1);
+    allocator.print_state();
 
-    std::cout << "Distance: " << p2 - p1 << " bytes\n"; 
-    
+    std::cout << "\nAllocating 50 bytes...\n";
+    void* ptr3 = allocator.allocate(50);
+    std::cout << "Pointer: " << ptr3 << '\n';
+    allocator.print_state();
+
+    std::cout << "\nAllocating 600 bytes...\n";
+    void* ptr4 = allocator.allocate(600);
+    std::cout << "Pointer: " << ptr4 << '\n';
+    allocator.print_state();
+
+    std::cout << "\nTrying to allocate 1000 bytes...\n";
+    void* ptr5 = allocator.allocate(1000);
+
+    if (ptr5 == nullptr) {
+        std::cout << "PASS: allocation failed as expected.\n";
+    } else {
+        std::cout << "FAIL: allocation should have failed.\n";
+    }
+
+    std::cout << "\nCalling deallocate(nullptr)...\n";
+    allocator.deallocate(nullptr);
+    std::cout << "Done.\n";
+
+    std::cout << "\nFinal state:\n";
+    allocator.print_state();
+
+    return 0;
     
 }
