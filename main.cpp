@@ -80,6 +80,15 @@ public:
                 }
                 current->is_free = true; //mark the block as avaible
                 return;
+
+                //check whether next block is free
+                if (current->next != nullptr && current->next->is_free){
+                    Block* next_block = current->next;
+                    current->size += next_block->size; //combine the 2 blocks
+                    current->next = next_block->next; //remove the next block from the linked list
+                    delete next_block; //delete since we no longer need its metadata
+                }
+                return;
             }
             //move to the next block
             offset += current->size;
@@ -108,6 +117,7 @@ public:
 
 };
 
+/*
 int main(){
     std::cout << std::boolalpha;
 
@@ -165,4 +175,28 @@ int main(){
 
     return 0;
     
+}
+*/
+
+int main(){
+    std::cout << "\n========== COALESCING TEST ==========\n";
+
+    MemoryAllocator test_allocator(1000);
+
+    void* a = test_allocator.allocate(100);
+    void* b = test_allocator.allocate(200);
+    void* c = test_allocator.allocate(300);
+
+    std::cout << "\nAfter allocating 100, 200, 300:\n";
+    test_allocator.print_state();
+
+    test_allocator.deallocate(b);
+
+    std::cout << "\nAfter freeing the 200-byte block:\n";
+    test_allocator.print_state();
+
+    test_allocator.deallocate(a);
+
+    std::cout << "\nAfter freeing the 100-byte block:\n";
+    test_allocator.print_state();
 }
