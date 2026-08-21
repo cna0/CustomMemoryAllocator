@@ -60,7 +60,8 @@ public:
     }
 
     void deallocate(void* ptr){
-        if (ptr = nullptr){
+        //nothing to free
+        if (ptr == nullptr){
             return;
         }
         Block* current = first_block;
@@ -72,6 +73,11 @@ public:
             char* block_address = memory + offset;
             //checks whether the pointer we were given belong to this block
             if (ptr == block_address){
+                //make sure we arent freeeing the same block twice
+                if (current->is_free){
+                    std::cout << "Warning: Block is alreay free \n";
+                    return;
+                }
                 current->is_free = true; //mark the block as avaible
                 return;
             }
@@ -79,6 +85,8 @@ public:
             offset += current->size;
             current = current->next;
         }
+        //the pointer didnt belong to our allocator
+        std::cout << "Warning: pointer doesnt belong to allocator";
     }
 
     //prints current state of all blocks
