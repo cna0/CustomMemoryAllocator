@@ -65,6 +65,7 @@ public:
             return;
         }
         Block* current = first_block;
+        Block* previous = nullptr;
         //keeps track of whjere current block starts relative to the beginning of the pool
         std::size_t offset = 0;
 
@@ -80,6 +81,7 @@ public:
                 }
                 current->is_free = true; //mark the block as avaible
 
+                // MERGE WITH NEXT BLOCK
                 //check whether next block is free
                 if (current->next != nullptr && current->next->is_free){
                     Block* next_block = current->next;
@@ -87,10 +89,19 @@ public:
                     current->next = next_block->next; //remove the next block from the linked list
                     delete next_block; //delete since we no longer need its metadata
                 }
+
+                // MERGE WITH PREVIOUS BLOCK
+                if (previous != nullptr && previous->is_free){
+                    previous->size += current->size; //combine with the previous block
+                    previous->next = current->next; //remove the prev block from the linked list
+                    delete current; //delete since we no longer need its metadata
+                }
+
                 return;
             }
             //move to the next block
             offset += current->size;
+            previous = current;
             current = current->next;
         }
         //the pointer didnt belong to our allocator
@@ -182,20 +193,25 @@ int main(){
 
     MemoryAllocator test_allocator(1000);
 
-    void* a = test_allocator.allocate(100);
-    void* b = test_allocator.allocate(200);
-    void* c = test_allocator.allocate(300);
+    void* a = test_allocator.allocate(300);
+    void* b = test_allocator.allocate(300);
+    void* c = test_allocator.allocate(400);
 
-    std::cout << "\nAfter allocating 100, 200, 300:\n";
-    test_allocator.print_state();
-
-    test_allocator.deallocate(b);
-
-    std::cout << "\nAfter freeing the 200-byte block:\n";
+    std::cout << "\nInitial allocations:\n";
     test_allocator.print_state();
 
     test_allocator.deallocate(a);
 
-    std::cout << "\nAfter freeing the 100-byte block:\n";
+    std::cout << "\nAfter freeing first block:\n";
+    test_allocator.print_state();
+
+    test_allocator.deallocate(c);
+
+    std::cout << "\nAfter freeing last block:\n";
+    test_allocator.print_state();
+
+    test_allocator.deallocate(b);
+
+    std::cout << "\nAfter freeing middle block:\n";
     test_allocator.print_state();
 }
