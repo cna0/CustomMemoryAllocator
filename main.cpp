@@ -79,7 +79,6 @@ public:
                     return;
                 }
                 current->is_free = true; //mark the block as avaible
-                return;
 
                 //check whether next block is free
                 if (current->next != nullptr && current->next->is_free){
