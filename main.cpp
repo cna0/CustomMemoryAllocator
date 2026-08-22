@@ -234,12 +234,12 @@ int main(){
 int main(){
     MemoryAllocator test(1000);
 
-    void* ptr = test.allocate(0);
+    void* ptr = test.allocate(1001);
 
     if (ptr == nullptr){
-        std::cout << "PASS: zero-byte allocation rejected.\n";
+        std::cout << "PASS: oversized allocation rejected.\n";
     }
     else{
-        std::cout << "FAIL: zero-byte allocation should be rejected.\n";
+        std::cout << "FAIL: oversized allocation should fail.\n";
     }
 }
