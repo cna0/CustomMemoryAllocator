@@ -234,12 +234,11 @@ int main(){
 int main(){
     MemoryAllocator test(1000);
 
-    void* ptr = test.allocate(1001);
+    void* ptr = test.allocate(100);
 
-    if (ptr == nullptr){
-        std::cout << "PASS: oversized allocation rejected.\n";
-    }
-    else{
-        std::cout << "FAIL: oversized allocation should fail.\n";
-    }
+    std::cout << "First deallocation:\n";
+    test.deallocate(ptr);
+
+    std::cout << "Second deallocation:\n";
+    test.deallocate(ptr);
 }
