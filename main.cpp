@@ -40,6 +40,11 @@ public:
 
     
     void* allocate(std::size_t size){
+        //not allowing zero byte allocations
+        if (size == 0){
+            return nullptr;
+        }
+
         Block* current = first_block;
 
         //keeps track of how many bytes passed while searching through the mem blocks
@@ -195,7 +200,7 @@ int main(){
     return 0;
     
 }
-*/
+
 
 int main(){
     std::cout << "\n========== COALESCING TEST ==========\n";
@@ -223,4 +228,18 @@ int main(){
 
     std::cout << "\nAfter freeing middle block:\n";
     test_allocator.print_state();
+}
+*/
+
+int main(){
+    MemoryAllocator test(1000);
+
+    void* ptr = test.allocate(0);
+
+    if (ptr == nullptr){
+        std::cout << "PASS: zero-byte allocation rejected.\n";
+    }
+    else{
+        std::cout << "FAIL: zero-byte allocation should be rejected.\n";
+    }
 }
