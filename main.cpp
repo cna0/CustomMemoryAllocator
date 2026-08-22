@@ -232,13 +232,9 @@ int main(){
 */
 
 int main(){
+    int x = 10;
+
     MemoryAllocator test(1000);
 
-    void* ptr = test.allocate(100);
-
-    std::cout << "First deallocation:\n";
-    test.deallocate(ptr);
-
-    std::cout << "Second deallocation:\n";
-    test.deallocate(ptr);
+    test.deallocate(&x);
 }
