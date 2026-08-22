@@ -28,8 +28,14 @@ public:
     }
     //deconstructor to clean up dynamically allocated memory to prevent leaks
     ~MemoryAllocator(){
-        delete[] memory;
-        delete first_block;
+        //strt at first block
+        Block* current = first_block;
+        while(current != nullptr){ //go through entire linked list
+            Block* next = current->next; //save the next block before deleting current block
+            delete current; //delete current block metadata
+            current = next; //next block
+        }
+        delete[] memory; // finally release the mem pool
     }
 
     
