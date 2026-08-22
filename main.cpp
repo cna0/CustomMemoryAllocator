@@ -41,11 +41,14 @@ public:
 
         while (current != nullptr){
             if (current->is_free && current->size >= size){
-                Block* new_block = new Block; //create a new block to rep remaining free memory
-                new_block->size = current->size - size; //new block gets what ever mem is left after req allocation
-                new_block->is_free = true; //the rem mem is free
-                new_block->next = current->next; //mew block takes the place of the current old nect block
-                current->next = new_block; //connect the current block to the newly created block
+                //only create a new block if there is mem left over
+                if (current->size > size){
+                    Block* new_block = new Block; //create a new block to rep remaining free memory
+                    new_block->size = current->size - size; //new block gets what ever mem is left after req allocation
+                    new_block->is_free = true; //the rem mem is free
+                    new_block->next = current->next; //mew block takes the place of the current old nect block
+                    current->next = new_block; //connect the current block to the newly created block
+                }
                 current->size = size; //current block rep only the amount of mem requested
                 current->is_free = false; //mark the current as being used
                 return memory + offset; //return pointer to beginning of mem pool
@@ -103,7 +106,7 @@ public:
             offset += current->size;
             previous = current;
             current = current->next;
-        }
+        } 
         //the pointer didnt belong to our allocator
         std::cout << "Warning: pointer doesnt belong to allocator";
     }
