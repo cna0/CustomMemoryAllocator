@@ -156,20 +156,157 @@ void test_result(const std::string& test_name, bool passed){
     }
 }
 
+
 void test_basic_allocation(){
     MemoryAllocator allocator(1000);
-    void* ptr1 = allocator.allocate(1001);
 
-    test_result( //if ptr!= nullptr, print pass else fail
-        "Oversized Allocatios",
-        ptr1 == nullptr
+    void* ptr = allocator.allocate(100);
+
+    test_result(
+        "Basic allocation",
+        ptr != nullptr
+    );
+}
+
+void test_multiple_allocations(){
+    MemoryAllocator allocator(1000);
+
+    void* ptr1 = allocator.allocate(100);
+    void* ptr2 = allocator.allocate(200);
+
+    test_result(
+        "Multiple allocations",
+        ptr1 != nullptr && ptr2 != nullptr && ptr1 != ptr2
+    );
+}
+
+void test_oversized_allocation(){
+    MemoryAllocator allocator(1000);
+
+    void* ptr = allocator.allocate(1001);
+
+    test_result(
+        "Oversized allocation",
+        ptr == nullptr
+    );
+}
+
+void test_zero_allocation(){
+    MemoryAllocator allocator(1000);
+
+    void* ptr = allocator.allocate(0);
+
+    test_result(
+        "Zero-byte allocation",
+        ptr == nullptr
+    );
+}
+
+void test_deallocation(){
+    MemoryAllocator allocator(1000);
+
+    void* ptr = allocator.allocate(100);
+
+    allocator.deallocate(ptr);
+
+    void* new_ptr = allocator.allocate(100);
+
+    test_result(
+        "Deallocation",
+        new_ptr != nullptr
+    );
+}
+
+void test_memory_reuse(){
+    MemoryAllocator allocator(1000);
+
+    void* ptr = allocator.allocate(100);
+
+    allocator.deallocate(ptr);
+
+    void* new_ptr = allocator.allocate(100);
+
+    test_result(
+        "Memory reuse",
+        new_ptr == ptr
+    );
+}
+
+void test_coalescing(){
+    MemoryAllocator allocator(1000);
+
+    void* ptr1 = allocator.allocate(300);
+    void* ptr2 = allocator.allocate(300);
+    void* ptr3 = allocator.allocate(400);
+
+    allocator.deallocate(ptr1);
+    allocator.deallocate(ptr3);
+    allocator.deallocate(ptr2);
+
+    void* ptr4 = allocator.allocate(1000);
+
+    test_result(
+        "Coalescing",
+        ptr4 != nullptr
+    );
+}
+
+void test_double_free(){
+    MemoryAllocator allocator(1000);
+
+    void* ptr = allocator.allocate(100);
+
+    allocator.deallocate(ptr);
+
+    // Attempt to free the same block again.
+    allocator.deallocate(ptr);
+
+    // The allocator should still be usable.
+    void* new_ptr = allocator.allocate(100);
+
+    test_result(
+        "Double-free protection",
+        new_ptr != nullptr
+    );
+}
+
+void test_invalid_pointer(){
+    MemoryAllocator allocator(1000);
+
+    int value = 42;
+
+    allocator.deallocate(&value);
+
+    // The allocator should still be usable.
+    void* ptr = allocator.allocate(100);
+
+    test_result(
+        "Invalid pointer protection",
+        ptr != nullptr
     );
 }
 
 int main(){
+
+    std::cout << "========== MEMORY ALLOCATOR TESTS ==========\n\n";
+
     test_basic_allocation();
-    std::cout << "\nTests Passed: " << tests_passed << '\n';
-    std::cout << "\nTests Failed: " << tests_failed << '\n';
-    
+    test_multiple_allocations();
+    test_oversized_allocation();
+    test_zero_allocation();
+    test_deallocation();
+    test_memory_reuse();
+    test_coalescing();
+    test_double_free();
+    test_invalid_pointer();
+
+    std::cout << "\n=============================================\n";
+
+    std::cout << "Tests passed: "
+              << tests_passed << '\n';
+
+    std::cout << "Tests failed: "
+              << tests_failed << '\n';
+
     return 0;
 }
