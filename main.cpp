@@ -158,10 +158,11 @@ void test_result(const std::string& test_name, bool passed){
 
 void test_basic_allocation(){
     MemoryAllocator allocator(1000);
-    void* ptr = allocator.allocate(100);
+    void* ptr1 = allocator.allocate(100);
+    void* ptr2 = allocator.allocate(200);
     test_result( //if ptr!= nullptr, print pass else fail
-        "Basic Allocation",
-        ptr != nullptr
+        "Multiple Allocatios",
+        ptr1 != nullptr && ptr2 != nullptr && ptr1 != ptr2
     );
 }
 
