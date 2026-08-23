@@ -1,6 +1,7 @@
 // Provides std::size_t, an unsigned integer type used to represent sizes and byte counts safely
 #include <cstddef>
 #include <iostream>
+#include <string>
 
 // Represents a chunk of memory within our memory pool
 struct Block{
@@ -141,100 +142,33 @@ public:
 
 };
 
-/*
+int tests_passed = 0;
+int tests_failed = 0;
+
+void test_result(const std::string& test_name, bool passed){
+    if (passed){
+        std::cout << "[PASS] " << test_name << '\n';
+        ++tests_passed;
+    }
+    else{
+        std::cout << "[FAIL] " << test_name << '\n';
+        ++tests_failed;
+    }
+}
+
+void test_basic_allocation(){
+    MemoryAllocator allocator(1000);
+    void* ptr = allocator.allocate(100);
+    test_result( //if ptr!= nullptr, print pass else fail
+        "Basic Allocation",
+        ptr != nullptr
+    );
+}
+
 int main(){
-    std::cout << std::boolalpha;
-
-    MemoryAllocator allocator(1000); //1000byte mem pool
-
-    std::cout << "Initial state:\n";
-    allocator.print_state();
-
-    std::cout << "\nAllocating 100 bytes...\n";
-    void* ptr1 = allocator.allocate(100);
-    std::cout << "Pointer: " << ptr1 << '\n';
-    allocator.print_state();
-
-    std::cout << "\nAllocating 200 bytes...\n";
-    void* ptr2 = allocator.allocate(200);
-    std::cout << "Pointer: " << ptr2 << '\n';
-    allocator.print_state();
-
-    std::cout << "\nChecking pointers...\n";
-    if (ptr1 != ptr2) {
-        std::cout << "PASS: pointers are different.\n";
-    } else {
-        std::cout << "FAIL: pointers are the same.\n";
-    }
-
-    std::cout << "\nFreeing the first block...\n";
-    allocator.deallocate(ptr1);
-    allocator.print_state();
-
-    std::cout << "\nAllocating 50 bytes...\n";
-    void* ptr3 = allocator.allocate(50);
-    std::cout << "Pointer: " << ptr3 << '\n';
-    allocator.print_state();
-
-    std::cout << "\nAllocating 600 bytes...\n";
-    void* ptr4 = allocator.allocate(600);
-    std::cout << "Pointer: " << ptr4 << '\n';
-    allocator.print_state();
-
-    std::cout << "\nTrying to allocate 1000 bytes...\n";
-    void* ptr5 = allocator.allocate(1000);
-
-    if (ptr5 == nullptr) {
-        std::cout << "PASS: allocation failed as expected.\n";
-    } else {
-        std::cout << "FAIL: allocation should have failed.\n";
-    }
-
-    std::cout << "\nCalling deallocate(nullptr)...\n";
-    allocator.deallocate(nullptr);
-    std::cout << "Done.\n";
-
-    std::cout << "\nFinal state:\n";
-    allocator.print_state();
-
-    return 0;
+    test_basic_allocation();
+    std::cout << "\nTests Passed: " << tests_passed << '\n';
+    std::cout << "\nTests Failed: " << tests_failed << '\n';
     
-}
-
-
-int main(){
-    std::cout << "\n========== COALESCING TEST ==========\n";
-
-    MemoryAllocator test_allocator(1000);
-
-    void* a = test_allocator.allocate(300);
-    void* b = test_allocator.allocate(300);
-    void* c = test_allocator.allocate(400);
-
-    std::cout << "\nInitial allocations:\n";
-    test_allocator.print_state();
-
-    test_allocator.deallocate(a);
-
-    std::cout << "\nAfter freeing first block:\n";
-    test_allocator.print_state();
-
-    test_allocator.deallocate(c);
-
-    std::cout << "\nAfter freeing last block:\n";
-    test_allocator.print_state();
-
-    test_allocator.deallocate(b);
-
-    std::cout << "\nAfter freeing middle block:\n";
-    test_allocator.print_state();
-}
-*/
-
-int main(){
-    int x = 10;
-
-    MemoryAllocator test(1000);
-
-    test.deallocate(&x);
+    return 0;
 }
