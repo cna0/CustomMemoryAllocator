@@ -286,6 +286,38 @@ void test_invalid_pointer(){
     );
 }
 
+void test_fragmentation(){
+
+    MemoryAllocator allocator(1000);
+
+    //create four blocks.
+    void* ptr1 = allocator.allocate(200);
+    void* ptr2 = allocator.allocate(200);
+    void* ptr3 = allocator.allocate(200);
+    void* ptr4 = allocator.allocate(200);
+
+    // Free the first and third blocks.
+    allocator.deallocate(ptr1);
+    allocator.deallocate(ptr3);
+
+    // Therefire there is now:
+    //
+    // [200 FREE][200 USED][200 FREE][200 USED][200 FREE]
+    //
+    // Total free memory = 600 bytes.
+    //
+    // However, the largest contiguous free block is only 200 bytes.
+
+    void* ptr5 = allocator.allocate(500);
+
+    test_result(
+        "Fragmentation handling",
+        ptr5 == nullptr
+    );
+}
+
+
+
 int main(){
 
     std::cout << "========== MEMORY ALLOCATOR TESTS ==========\n\n";
@@ -297,6 +329,7 @@ int main(){
     test_deallocation();
     test_memory_reuse();
     test_coalescing();
+    test_fragmentation();
     test_double_free();
     test_invalid_pointer();
 
@@ -309,4 +342,4 @@ int main(){
               << tests_failed << '\n';
 
     return 0;
-}
+} 
