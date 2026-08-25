@@ -40,13 +40,19 @@ public:
     }
 
     
+    //First fit allocation strategy
+    //Searches from the beginning of the block list and uses the first free block large enough to satisfy the requested allocation
     void* allocate(std::size_t size){
         //not allowing zero byte allocations
         if (size == 0){
             return nullptr;
         }
 
-        Block* current = first_block;
+        Block* current = find_first_fit(size);
+
+        if (current == nullptr){
+            return nullptr;
+        }
 
         //keeps track of how many bytes passed while searching through the mem blocks
         std::size_t offset = 0;
@@ -71,6 +77,17 @@ public:
 
         }
 
+        return nullptr;
+    }
+
+    Block* find_first_fit(std::size_t size){
+        Block* current = first_block;
+        while (current != nullptr){
+            if (current->is_free && current->size >= size){
+                return current;
+            }
+            current = current->next;
+        }
         return nullptr;
     }
 
