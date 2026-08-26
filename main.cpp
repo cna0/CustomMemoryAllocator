@@ -91,6 +91,28 @@ public:
         return nullptr;
     }
 
+    Block* find_best_fit(std::size_t size){
+        Block* current = first_block;
+        Block* best_block = nullptr; //used to keep track of smallest suitable block
+
+        
+        while (current != nullptr){
+            //check whether this block can hold the requested allocation
+            if (current->is_free && current->size >= size){
+                //if this is the first suitable block make it the best block
+                if (best_block == nullptr){
+                    best_block = current;
+                }
+                //or replace it
+                else if (current->size < best_block->size){
+                    best_block = current;
+                }
+            }
+            current = current->next;
+        }
+        return best_block;
+    }
+
     void deallocate(void* ptr){
         //nothing to free
         if (ptr == nullptr){
