@@ -48,36 +48,36 @@ public:
             return nullptr;
         }
 
-        Block* current = find_first_fit(size);
+        Block* target = find_first_fit(size);
 
-        if (current == nullptr){
+        if (target == nullptr){
             return nullptr;
         }
 
         //keeps track of how many bytes passed while searching through the mem blocks
         std::size_t offset = 0;
 
-        while (current != nullptr){
-            if (current->is_free && current->size >= size){
-                //only create a new block if there is mem left over
-                if (current->size > size){
-                    Block* new_block = new Block; //create a new block to rep remaining free memory
-                    new_block->size = current->size - size; //new block gets what ever mem is left after req allocation
-                    new_block->is_free = true; //the rem mem is free
-                    new_block->next = current->next; //mew block takes the place of the current old nect block
-                    current->next = new_block; //connect the current block to the newly created block
-                }
-                current->size = size; //current block rep only the amount of mem requested
-                current->is_free = false; //mark the current as being used
-                return memory + offset; //return pointer to beginning of mem pool
-            }
-            
+        // Find where the target block begins
+        // relative to the start of the memory pool.
+        Block* current = first_block;
+
+        while (current != target){
             offset += current->size;
-            current = current->next; //this block wasnt suitable so we move to the next block
-
+            current = current->next;
         }
-
-        return nullptr;
+        
+        //only create a new block if there is mem left over
+        if (target->size > size){
+            Block* new_block = new Block; //create a new block to rep remaining free memory
+            new_block->size = target->size - size; //new block gets what ever mem is left after req allocation
+            new_block->is_free = true; //the rem mem is free
+            new_block->next = target->next; //mew block takes the place of the current old nect block
+            target->next = new_block; //connect the current block to the newly created block
+        }
+        target->size = size; //current block rep only the amount of mem requested
+        target->is_free = false; //mark the current as being used
+        return memory + offset; //return pointer to beginning of mem pool
+        
     }
 
     Block* find_first_fit(std::size_t size){
