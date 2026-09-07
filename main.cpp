@@ -541,6 +541,72 @@ void test_best_fit(){
     );
 }
 
+void test_strategy_comparison(){
+
+    MemoryAllocator first_fit(
+        1200,
+        AllocationStrategy::FIRST_FIT
+    );
+
+    MemoryAllocator best_fit(
+        1200,
+        AllocationStrategy::BEST_FIT
+    );
+
+
+    // Create four blocks:
+    //
+    // [100][200][400][200][300]
+    //
+    // Total = 1200 bytes.
+
+    void* ff1 = first_fit.allocate(100);
+    void* ff2 = first_fit.allocate(200);
+    void* ff3 = first_fit.allocate(400);
+    void* ff4 = first_fit.allocate(200);
+    void* ff5 = first_fit.allocate(300);
+
+
+    void* bf1 = best_fit.allocate(100);
+    void* bf2 = best_fit.allocate(200);
+    void* bf3 = best_fit.allocate(400);
+    void* bf4 = best_fit.allocate(200);
+    void* bf5 = best_fit.allocate(300);
+
+
+    // Free the 400-byte and 300-byte blocks.
+    //
+    // [100 USED][200 USED][400 FREE][200 USED][300 FREE]
+
+    first_fit.deallocate(ff3);
+    first_fit.deallocate(ff5);
+
+    best_fit.deallocate(bf3);
+    best_fit.deallocate(bf5);
+
+
+    // Request 250 bytes.
+    //
+    // First-fit:
+    //     400-byte block is encountered first.
+    //
+    // Best-fit:
+    //     300-byte block is the smallest suitable block.
+
+    void* ff6 = first_fit.allocate(250);
+    void* bf6 = best_fit.allocate(250);
+
+
+    test_result(
+        "First-fit chooses first suitable block",
+        ff6 == ff3
+    );
+
+    test_result(
+        "Best-fit chooses smallest suitable block",
+        bf6 == bf5
+    );
+}
 
 // ============================================================
 // MAIN
@@ -573,6 +639,8 @@ int main(){
     test_invalid_pointer();
 
     test_best_fit();
+
+    test_strategy_comparison();
 
 
     std::cout
