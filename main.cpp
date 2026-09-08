@@ -716,6 +716,12 @@ int main(){
         << tests_failed
         << '\n';
 
+    std::cout << "\n========== BENCHMARK ==========\n\n";
+
+    benchmark_strategy(AllocationStrategy::FIRST_FIT);
+
+    benchmark_strategy(AllocationStrategy::BEST_FIT);   
+
 
     return 0;
 }
