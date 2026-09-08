@@ -2,6 +2,8 @@
 #include <cstddef>
 #include <iostream>
 #include <string>
+#include <chrono>
+#include <vector>
 
 // Represents a chunk of memory within our memory pool
 struct Block{
@@ -607,6 +609,64 @@ void test_strategy_comparison(){
         bf6 == bf5
     );
 }
+
+void benchmark_strategy(AllocationStrategy strategy){
+
+    const int number_of_allocations = 10000;
+
+    MemoryAllocator allocator(
+        1000000,
+        strategy
+    );
+
+    std::vector<void*> pointers;
+
+    pointers.reserve(number_of_allocations);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+
+    // Perform lots of allocations.
+    for (int i = 0; i < number_of_allocations; ++i){
+
+        void* ptr = allocator.allocate(50);
+
+        if (ptr != nullptr){
+            pointers.push_back(ptr);
+        }
+    }
+
+
+    // Free everything we allocated.
+    for (void* ptr : pointers){
+
+        allocator.deallocate(ptr);
+    }
+
+
+    auto end = std::chrono::high_resolution_clock::now();
+
+
+    auto duration =
+        std::chrono::duration_cast<std::chrono::microseconds>(
+            end - start
+        );
+
+
+    if (strategy == AllocationStrategy::FIRST_FIT){
+
+        std::cout << "First-fit: "
+                  << duration.count()
+                  << " microseconds\n";
+    }
+    else{
+
+        std::cout << "Best-fit:  "
+                  << duration.count()
+                  << " microseconds\n";
+    }
+}
+
 
 // ============================================================
 // MAIN
