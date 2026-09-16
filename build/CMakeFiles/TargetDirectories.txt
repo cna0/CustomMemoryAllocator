@@ -1,5 +1,0 @@
-/Users/chanutha/Documents/Projects/MemoryAllocator/build/CMakeFiles/memory_allocator.dir
-/Users/chanutha/Documents/Projects/MemoryAllocator/build/CMakeFiles/tests.dir
-/Users/chanutha/Documents/Projects/MemoryAllocator/build/CMakeFiles/benchmark.dir
-/Users/chanutha/Documents/Projects/MemoryAllocator/build/CMakeFiles/edit_cache.dir
-/Users/chanutha/Documents/Projects/MemoryAllocator/build/CMakeFiles/rebuild_cache.dir
